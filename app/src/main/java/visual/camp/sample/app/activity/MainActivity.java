@@ -25,6 +25,10 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+
 import camp.visual.gazetracker.GazeTracker;
 import camp.visual.gazetracker.callback.CalibrationCallback;
 import camp.visual.gazetracker.callback.GazeCallback;
@@ -44,13 +48,21 @@ import camp.visual.gazetracker.util.ViewLayoutChecker;
 import visual.camp.sample.app.GazeTrackerManager;
 import visual.camp.sample.app.GazeTrackerManager.LoadCalibrationResult;
 import visual.camp.sample.app.R;
+import visual.camp.sample.app.databinding.ActivityMainBinding;
 import visual.camp.sample.view.CalibrationViewer;
 import visual.camp.sample.view.PointView;
 import visual.camp.sample.view.EyeBlinkView;
 import visual.camp.sample.view.AttentionView;
 import visual.camp.sample.view.DrowsinessView;
 
+
 public class MainActivity extends AppCompatActivity {
+    // Declare Constants
+    static final int gazeHistoryLength = 10;
+
+    // View Binding
+    ActivityMainBinding binding;
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] PERMISSIONS = new String[]{
             Manifest.permission.CAMERA // 시선 추적 input
@@ -61,12 +73,65 @@ public class MainActivity extends AppCompatActivity {
     private HandlerThread backgroundThread = new HandlerThread("background");
     private Handler backgroundHandler;
 
+
+    List<Button> targetButtons = new ArrayList<>();
+    private ArrayDeque gazeHistory= new ArrayDeque<GazeInfo>();
+    private List<GazeButton> gazeButtons = new ArrayList<>();
+
+
+    // TODO: Move this to helper class
+    public class GazeButton {
+        private int x1;
+        private int y1;
+        private int x2;
+        private int y2;
+        private Button button;
+        private float progress;
+
+        public Button getButton(){
+            return button;
+        }
+
+
+        public GazeButton(int x1, int x2, int y1, int y2, Button button){
+            this.x1 = x1;
+            this.x2 = x2;
+            this.y1 = y1;
+            this.y2 = y2;
+            this.button = button;
+        }
+
+        public Boolean isButtonContains(int gazeX, int gazeY){
+            if (gazeX < x1 || gazeX > x2 || gazeY < y1 || gazeY > y2) {
+                Log.i(TAG, String.format("gazeInfo.x: %d, gazeInfo.y: %d",gazeX,gazeY));
+                Log.i(TAG, String.format("Button: x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
+                return false;
+            }
+            return true;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // view binding
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
+
+
         gazeTrackerManager = GazeTrackerManager.makeNewInstance(this);
-        Log.i(TAG, "gazeTracker version: " + GazeTracker.getVersionName());
+        // Log.i(TAG, "gazeTracker version: " + GazeTracker.getVersionName());
+
+
+        // bind Click option
+        binding.testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("INFO","Test Button Clicked");
+            }
+        });
 
         initView();
         checkPermission();
@@ -76,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         if (preview.isAvailable()) {
           // When if textureView available
           gazeTrackerManager.setCameraPreview(preview);
@@ -89,9 +155,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume");
+
+
         // 화면 전환후에도 체크하기 위해
         setOffsetOfView();
         gazeTrackerManager.startGazeTracking();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus){
+        super.onWindowFocusChanged(hasFocus);
+
+        // Record Gaze Button Position
+        targetButtons.add(binding.testButton);
+        // add buttons that require gaze-control function to this.gazeButtons
+        for(int i=0; i<targetButtons.size(); i++){
+            int [] coordinates = new int[2];
+            Button targetButton = targetButtons.get(i);
+            targetButton.getLocationOnScreen(coordinates);
+            int x1 = coordinates[0];
+            int y1 = coordinates[1];
+            int x2 = x1 + targetButton.getWidth();
+            int y2 = y1 + targetButton.getHeight();
+
+            Log.i(TAG, String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
+            gazeButtons.add(new GazeButton(x1,x2,y1,y2,targetButton));
+        }
     }
 
     @Override
@@ -205,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnStartTracking, btnStopTracking;
     private Button btnStartCalibration, btnStopCalibration, btnSetCalibration;
     private Button btnGuiDemo;
+    private Button ruilinDemoButton;
     private CalibrationViewer viewCalibration;
     private EyeBlinkView viewEyeBlink;
     private AttentionView viewAttention;
@@ -258,6 +348,18 @@ public class MainActivity extends AppCompatActivity {
 
         btnGuiDemo = findViewById(R.id.btn_gui_demo);
         btnGuiDemo.setOnClickListener(onClickListener);
+
+        // TODO: REMOVE THIS
+        // ruilin_demo button
+        ruilinDemoButton = binding.ruilinDemo;
+        ruilinDemoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), NewsContentActivity.class);
+                    startActivity(intent);
+                }
+        });
+
 
         viewPoint = findViewById(R.id.view_point);
         viewCalibration = findViewById(R.id.view_calibration);
@@ -586,12 +688,42 @@ public class MainActivity extends AppCompatActivity {
         hideProgress();
     }
 
+    private void logGazeHistory(ArrayDeque<GazeInfo> gazeHistory){
+        List<String> coordinates = new ArrayList<>();
+        List<GazeInfo> gazeHistoryList = new ArrayList<>(gazeHistory);
+        for(int i =0; i<gazeHistory.size();i++){
+            coordinates.add(Float.toString(gazeHistoryList.get(i).x)+","+Float.toString(gazeHistoryList.get(i).y));
+        }
+
+        // Convert Coordinates to String
+        String result = "";
+        for(int i=0; i<coordinates.size();i++){
+            result += coordinates.get(i) + " ";
+        }
+
+        Log.i("GazeHistory", result);
+    }
+
     private final OneEuroFilterManager oneEuroFilterManager = new OneEuroFilterManager(2);
     private final GazeCallback gazeCallback = new GazeCallback() {
       @Override
       public void onGaze(GazeInfo gazeInfo) {
         processOnGaze(gazeInfo);
-        Log.i(TAG, "check eyeMovement " + gazeInfo.eyeMovementState);
+//        if(gazeHistory.size()>gazeHistoryLength){
+//            gazeHistory.pollFirst();
+//        }
+//        gazeHistory.push(gazeInfo);
+
+        for(int i=0; i<gazeButtons.size();i++){
+            int x = (int)Math.round(gazeInfo.x);
+            int y = (int)Math.round(gazeInfo.y);
+            GazeButton btn = gazeButtons.get(i);
+            if(btn.isButtonContains(x,y)){
+                Log.i(TAG, btn.toString());
+                break;
+            }
+        }
+
       }
     };
 

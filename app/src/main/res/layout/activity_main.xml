@@ -23,6 +23,13 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <Button
+            android:id="@+id/testButton"
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:text="test button" />
+
         <LinearLayout
             android:layout_width="200dip"
             android:layout_height="wrap_content"
@@ -109,6 +116,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="gaze path demo" />
+
+                <Button
+                    android:id="@+id/ruilin_demo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TEST DEMO" />
+
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
@@ -258,6 +272,8 @@
 
     </visual.camp.sample.view.CalibrationViewer>
 
-    <include layout="@layout/layout_progress" />
+    <include
+        layout="@layout/layout_progress"
+        android:visibility="invisible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

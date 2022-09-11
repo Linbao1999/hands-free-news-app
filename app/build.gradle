@@ -21,6 +21,11 @@ android {
         }
     }
 
+    buildFeatures {
+        dataBinding true
+        viewBinding true
+    }
+
 }
 
 dependencies {
@@ -31,6 +36,9 @@ dependencies {
     implementation project(":view")
     implementation project(":libgaze-release")
     implementation project(':gazetracker-release')
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.navigation:navigation-fragment:2.3.5'
+    implementation 'androidx.navigation:navigation-ui:2.3.5'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
