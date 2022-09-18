@@ -123,6 +123,12 @@
                     android:layout_height="wrap_content"
                     android:text="Week 6 Demo" />
 
+                <Button
+                    android:id="@+id/weekSevenDemoButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Week 7 Demo" />
+
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

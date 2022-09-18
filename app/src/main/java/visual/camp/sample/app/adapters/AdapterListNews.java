@@ -20,11 +20,11 @@ import visual.camp.sample.app.databinding.NewsCardBinding;
 public class AdapterListNews extends RecyclerView.Adapter<AdapterListNews.NewsViewHolder> {
 
     private List<News> items;
-    // AdapterItemClickListener adapterItemClickListener;
+    AdapterItemClickListener adapterItemClickListener;
 
     public AdapterListNews(List<News> items, AdapterItemClickListener adapterItemClickListener) {
         this.items = items;
-        //this.adapterItemClickListener = adapterItemClickListener;
+        this.adapterItemClickListener = adapterItemClickListener;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class AdapterListNews extends RecyclerView.Adapter<AdapterListNews.NewsVi
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(NewsViewHolder holder, final int position) {
-        // holder.bind(getItem(position), adapterItemClickListener);
-        holder.bind(getItem(position));
+        holder.bind(getItem(position), adapterItemClickListener);
+
     }
 
     @Override
@@ -58,14 +58,11 @@ public class AdapterListNews extends RecyclerView.Adapter<AdapterListNews.NewsVi
             this.newsCardBinding = newsCardBinding;
         }
 
-//        public void bind(News news, AdapterItemClickListener adapterItemClickListener) {
-//            this.newsCardBinding.setNews(news);
-//            this.newsCardBinding.setClickListener(adapterItemClickListener);
-//        }
-
-        public void bind(News news) {
+        public void bind(News news, AdapterItemClickListener adapterItemClickListener) {
             this.newsCardBinding.setNews(news);
+            this.newsCardBinding.setClickListener(adapterItemClickListener);
         }
+
     }
 
 }

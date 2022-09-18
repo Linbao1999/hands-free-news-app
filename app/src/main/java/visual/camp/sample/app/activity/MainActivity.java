@@ -296,6 +296,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnGuiDemo;
     private Button ruilinDemoButton;
     private Button week6DemoButton;
+    private Button week7DemoButton;
+
     private CalibrationViewer viewCalibration;
     private EyeBlinkView viewEyeBlink;
     private AttentionView viewAttention;
@@ -369,6 +371,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        week7DemoButton = binding.weekSevenDemoButton;
+        week7DemoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), CategoryNavigationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
 
 
 

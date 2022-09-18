@@ -54,9 +54,9 @@ public class NewsContentActivity extends GazeControlledActivity {
         setContentView(view);
 
         // 1. Init View
-        // 1.1 Bind Views
+        // 1.1 Bind Components
         webView = binding.newsWebView;
-        // 1.2 Init Views
+        // 1.2 Init Components
         webView.loadUrl("https://www.abc.net.au/news/2022-09-01/house-price-plunge-continues-corelogic-proptrack/101392116");
         binding.gazeButtonDown.setOnClickListener(new View.OnClickListener() {
             @Override

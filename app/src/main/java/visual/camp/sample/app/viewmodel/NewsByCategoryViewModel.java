@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import visual.camp.sample.app.databinding.NewsContentBinding;
 import visual.camp.sample.app.model.News;
 import visual.camp.sample.app.model.NewsCollectionByCategory;
 import visual.camp.sample.app.restapi.ApiClient;
@@ -36,7 +37,6 @@ public class NewsByCategoryViewModel extends ViewModel{
     }
 
 
-
     public MutableLiveData<List<News>> getNewsLiveData() {
         return newsLiveData;
     }
@@ -48,6 +48,7 @@ public class NewsByCategoryViewModel extends ViewModel{
     }
 
     public void getNews(String category) throws Exception {
+
         RestInterface restInterface = getRestInterface();
         Call<NewsCollectionByCategory> call;
         newsList.clear();

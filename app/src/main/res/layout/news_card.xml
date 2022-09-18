@@ -8,9 +8,9 @@
             name="news"
             type="visual.camp.sample.app.model.News" />
 
-<!--        <variable-->
-<!--            name="clickListener"-->
-<!--            type="com.project.newsapp.clicklisteners.AdapterItemClickListener" />-->
+        <variable
+            name="clickListener"
+            type="visual.camp.sample.app.clicklisteners.AdapterItemClickListener" />
     </data>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
