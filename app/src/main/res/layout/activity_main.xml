@@ -24,12 +24,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/testButton"
-            android:layout_width="match_parent"
-            android:layout_height="128dp"
-            android:text="test button" />
-
         <LinearLayout
             android:layout_width="200dip"
             android:layout_height="wrap_content"
@@ -122,6 +116,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="TEST DEMO" />
+
+                <Button
+                    android:id="@+id/weeekSixDemoButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Week 6 Demo" />
 
             </LinearLayout>
         </ScrollView>

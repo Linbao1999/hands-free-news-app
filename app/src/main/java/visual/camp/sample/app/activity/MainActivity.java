@@ -125,13 +125,13 @@ public class MainActivity extends AppCompatActivity {
         // Log.i(TAG, "gazeTracker version: " + GazeTracker.getVersionName());
 
 
-        // bind Click option
-        binding.testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("INFO","Test Button Clicked");
-            }
-        });
+//        // bind Click option
+//        binding.testButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.i("INFO","Test Button Clicked");
+//            }
+//        });
 
         initView();
         checkPermission();
@@ -162,26 +162,26 @@ public class MainActivity extends AppCompatActivity {
         gazeTrackerManager.startGazeTracking();
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus){
-        super.onWindowFocusChanged(hasFocus);
-
-        // Record Gaze Button Position
-        targetButtons.add(binding.testButton);
-        // add buttons that require gaze-control function to this.gazeButtons
-        for(int i=0; i<targetButtons.size(); i++){
-            int [] coordinates = new int[2];
-            Button targetButton = targetButtons.get(i);
-            targetButton.getLocationOnScreen(coordinates);
-            int x1 = coordinates[0];
-            int y1 = coordinates[1];
-            int x2 = x1 + targetButton.getWidth();
-            int y2 = y1 + targetButton.getHeight();
-
-            Log.i(TAG, String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
-            gazeButtons.add(new GazeButton(x1,x2,y1,y2,targetButton));
-        }
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus){
+//        super.onWindowFocusChanged(hasFocus);
+//
+//        // Record Gaze Button Position
+//        targetButtons.add(binding.testButton);
+//        // add buttons that require gaze-control function to this.gazeButtons
+//        for(int i=0; i<targetButtons.size(); i++){
+//            int [] coordinates = new int[2];
+//            Button targetButton = targetButtons.get(i);
+//            targetButton.getLocationOnScreen(coordinates);
+//            int x1 = coordinates[0];
+//            int y1 = coordinates[1];
+//            int x2 = x1 + targetButton.getWidth();
+//            int y2 = y1 + targetButton.getHeight();
+//
+//            Log.i(TAG, String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
+//            gazeButtons.add(new GazeButton(x1,x2,y1,y2,targetButton));
+//        }
+//    }
 
     @Override
     protected void onPause() {
@@ -295,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnStartCalibration, btnStopCalibration, btnSetCalibration;
     private Button btnGuiDemo;
     private Button ruilinDemoButton;
+    private Button week6DemoButton;
     private CalibrationViewer viewCalibration;
     private EyeBlinkView viewEyeBlink;
     private AttentionView viewAttention;
@@ -359,6 +360,17 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
         });
+
+        week6DemoButton = binding.weeekSixDemoButton;
+        week6DemoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), NewsCollectionByCategoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
 
 
         viewPoint = findViewById(R.id.view_point);
