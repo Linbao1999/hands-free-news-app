@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import visual.camp.sample.app.R;
 import visual.camp.sample.app.clicklisteners.AdapterItemClickListener;
@@ -33,11 +34,11 @@ public class AdapterListNews extends RecyclerView.Adapter<AdapterListNews.NewsVi
         return new NewsViewHolder(newsCardBinding);
     }
 
+
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(NewsViewHolder holder, final int position) {
         holder.bind(getItem(position), adapterItemClickListener);
-
     }
 
     @Override

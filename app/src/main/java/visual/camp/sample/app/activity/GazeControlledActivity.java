@@ -55,7 +55,7 @@ public class GazeControlledActivity extends AppCompatActivity {
 
     List<Button> targetButtons = new ArrayList<>();
     List<CardView> targetCardViews = new ArrayList<>();
-    private ArrayDeque gazeHistory = new ArrayDeque<Integer>();
+    public ArrayDeque gazeHistory = new ArrayDeque<Integer>();
     public List<GazeButton> gazeButtons = new ArrayList<>();
     public List<GazeCardView> gazeCardViews = new ArrayList<>();
 

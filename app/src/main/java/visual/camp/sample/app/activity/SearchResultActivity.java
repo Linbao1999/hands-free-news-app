@@ -2,12 +2,9 @@ package visual.camp.sample.app.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -23,26 +20,22 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 
-import visual.camp.sample.app.R;
 import visual.camp.sample.app.databinding.ActivityNewsCollecrtionByCategoryBinding;
+import visual.camp.sample.app.databinding.ActivitySearchResultBinding;
 import visual.camp.sample.app.model.News;
 import visual.camp.sample.app.viewmodel.NewsByCategoryViewModel;
 
-public class NewsCollectionByCategoryActivity extends GazeControlledActivity implements LifecycleOwner {
-    // View Binding
+public class SearchResultActivity extends GazeControlledActivity {
 
-    // TODO: Put this in environment variable
     static final String NEWS_API_KEY = "2ada588a66e745cfbce485182fd34bf7";
-    ActivityNewsCollecrtionByCategoryBinding binding;
+    ActivitySearchResultBinding binding;
     NewsByCategoryViewModel viewModel;
-    NewsCollectionByCategoryActivity context;
+    SearchResultActivity context;
     List<News> newsList;
-    String categoryName;
+    String searchString;
     Button backButton;
     View view;
-
     List<CardView> newsCardViewList;
 
     @Override
@@ -54,11 +47,11 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
 
         if(b!=null)
         {
-            categoryName =(String) b.get("categoryName");
+            searchString =(String) b.get("searchString");
         }
 
         // view binding
-        binding = ActivityNewsCollecrtionByCategoryBinding.inflate(getLayoutInflater());
+        binding = ActivitySearchResultBinding.inflate(getLayoutInflater());
         view = binding.getRoot();
         setContentView(view);
         context = this;
@@ -69,10 +62,9 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
         newsCardViewList.add(binding.cardView2);
         newsCardViewList.add(binding.cardView3);
 
-
-        // Set Category Name
-        TextView categoryNameTextView = binding.categoryNameTextView;
-        categoryNameTextView.setText(categoryName.toUpperCase(Locale.ROOT));
+        // Set Search Text
+        TextView searchStringTextView = binding.searchStringTextView;
+        searchStringTextView.setText(searchString.toUpperCase(Locale.ROOT));
 
         // Set Up Back Button
         backButton = binding.gazeButtonBack;
@@ -91,15 +83,12 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
         viewModel.getNewsLiveData().observe(context, newsListUpdateObserver);
         viewModel.setApiKey(NEWS_API_KEY);
         try {
-            viewModel.getNews(categoryName);
-            Log.i("Debug","viewModel.getNews() successes");
+            viewModel.getSearchedNews(searchString);
+            Log.i("Debug","viewModel.getSearchedNews() successes");
         } catch (Exception e) {
-            Log.i("Debug","viewModel.getNews() failed");
+            Log.i("Debug", "viewModel.getSearchedNews() failed");
         }
-        //viewModel.setCountryCode(pref.getString(Util.COUNTRY_PREF, "tr"));
-
     }
-
     Observer<List<News>> newsListUpdateObserver = new Observer<List<News>>() {
         @Override
         public void onChanged(List<News> news) {
@@ -149,15 +138,14 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
                     urlToImage2 = new URL(newsList.get(1).getUrlToImage());
                     urlToImage3 = new URL(newsList.get(2).getUrlToImage());
 
-//                    binding.newsImage1.setImageBitmap(BitmapFactory.decodeStream(urlToImage1.openConnection().getInputStream()));
-//                    binding.newsImage2.setImageBitmap(BitmapFactory.decodeStream(urlToImage2.openConnection().getInputStream()));
-//                    binding.newsImage3.setImageBitmap(BitmapFactory.decodeStream(urlToImage3.openConnection().getInputStream()));
+                    binding.newsImage1.setImageBitmap(BitmapFactory.decodeStream(urlToImage1.openConnection().getInputStream()));
+                    binding.newsImage2.setImageBitmap(BitmapFactory.decodeStream(urlToImage2.openConnection().getInputStream()));
+                    binding.newsImage3.setImageBitmap(BitmapFactory.decodeStream(urlToImage3.openConnection().getInputStream()));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
 
                 handler.post(new Runnable() {
                     @Override
@@ -173,7 +161,6 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
             }
         }
     };
-
 
 
     @Override
@@ -194,6 +181,4 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
             gazeCardViews.add(new GazeCardView(x1,x2,y1,y2,targetCardView));
         }
     }
-
-
 }

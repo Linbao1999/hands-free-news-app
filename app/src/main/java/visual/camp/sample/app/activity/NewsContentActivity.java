@@ -2,6 +2,7 @@ package visual.camp.sample.app.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -43,7 +44,7 @@ public class NewsContentActivity extends GazeControlledActivity {
 
     NewsContentBinding binding;
     WebView webView;
-
+    String newsUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +54,20 @@ public class NewsContentActivity extends GazeControlledActivity {
         View view = binding.getRoot();
         setContentView(view);
 
+        // unpack newsUrl from intent
+        Intent intent= getIntent();
+        Bundle b = intent.getExtras();
+
+        if(b!=null)
+        {
+            newsUrl =(String) b.get("newsUrl");
+        }
+
         // 1. Init View
         // 1.1 Bind Components
         webView = binding.newsWebView;
         // 1.2 Init Components
-        webView.loadUrl("https://www.abc.net.au/news/2022-09-01/house-price-plunge-continues-corelogic-proptrack/101392116");
+        webView.loadUrl(newsUrl);
         binding.gazeButtonDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

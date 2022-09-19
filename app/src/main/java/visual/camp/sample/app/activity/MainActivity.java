@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] PERMISSIONS = new String[]{
-            Manifest.permission.CAMERA // 시선 추적 input
+            Manifest.permission.CAMERA, // 시선 추적 input
+            Manifest.permission.RECORD_AUDIO
     };
     private static final int REQ_PERMISSION = 1000;
     private GazeTrackerManager gazeTrackerManager;

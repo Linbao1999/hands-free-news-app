@@ -85,6 +85,30 @@ public class NewsByCategoryViewModel extends ViewModel{
     }
 
 
+    public void getSearchedNews(String keyword) {
+        RestInterface restInterface = getRestInterface();
+        Call<NewsCollectionByCategory> call;
+        newsList.clear();
+        newsLiveData.setValue(null);
+        call = restInterface.getSearchedTotalNews(keyword, apiKey);
+
+        call.enqueue(new Callback<NewsCollectionByCategory>() {
+            @Override
+            public void onResponse(Call<NewsCollectionByCategory> call, Response<NewsCollectionByCategory> response) {
+                if (response.body() != null) {
+                    NewsCollectionByCategory totalNews = response.body();
+                    fillNewsList(totalNews);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NewsCollectionByCategory> call, Throwable t) {
+                newsLiveData.setValue(null);
+            }
+        });
+    }
+
+
     private void fillNewsList(NewsCollectionByCategory totalNews) {
         for(int i=0;i<totalNews.getNewsList().size();i++){
             Log.i("Debug", "News Title: " + totalNews.getNewsList().get(i).getTitle());
