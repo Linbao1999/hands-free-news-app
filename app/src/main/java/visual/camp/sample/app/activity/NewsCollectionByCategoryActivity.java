@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -143,21 +145,11 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
                 }
 
                 // THIS CAN"T BE DONE IN THE UI THREAD
-                URL urlToImage1, urlToImage2, urlToImage3;
-                try {
-                    urlToImage1 = new URL(newsList.get(0).getUrlToImage());
-                    urlToImage2 = new URL(newsList.get(1).getUrlToImage());
-                    urlToImage3 = new URL(newsList.get(2).getUrlToImage());
 
-//                    binding.newsImage1.setImageBitmap(BitmapFactory.decodeStream(urlToImage1.openConnection().getInputStream()));
-//                    binding.newsImage2.setImageBitmap(BitmapFactory.decodeStream(urlToImage2.openConnection().getInputStream()));
-//                    binding.newsImage3.setImageBitmap(BitmapFactory.decodeStream(urlToImage3.openConnection().getInputStream()));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                Picasso.get().load(newsList.get(0).getUrlToImage()).into(binding.newsImage1);
+                Picasso.get().load(newsList.get(1).getUrlToImage()).into(binding.newsImage2);
+                Picasso.get().load(newsList.get(2).getUrlToImage()).into(binding.newsImage3);
+
 
                 handler.post(new Runnable() {
                     @Override
@@ -180,7 +172,7 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
     public void onWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
 
-        // add buttons that require gaze-control function to this.gazeButtons
+        // add card views that require gaze-control function to this.gazeButtons
         for(int i=0; i<targetCardViews.size(); i++){
             int [] coordinates = new int[2];
             CardView targetCardView = targetCardViews.get(i);
@@ -193,6 +185,26 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
             Log.i("Target Card Bound",  String.format("%dth Card: ", i) + String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
             gazeCardViews.add(new GazeCardView(x1,x2,y1,y2,targetCardView));
         }
+
+        super.onWindowFocusChanged(hasFocus);
+
+        // 2. Add Gaze Controlled Card / Buttons
+        targetButtons.add(binding.gazeButtonBack);
+        // add buttons that require gaze-control function to this.gazeButtons
+        for(int i=0; i<targetButtons.size(); i++){
+            int [] coordinates = new int[2];
+            Button targetButton = targetButtons.get(i);
+            targetButton.getLocationOnScreen(coordinates);
+            int x1 = coordinates[0];
+            int y1 = coordinates[1];
+            int x2 = x1 + targetButton.getWidth();
+            int y2 = y1 + targetButton.getHeight();
+
+            Log.i("GAZE_DEBUG", String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
+            gazeButtons.add(new GazeButton(x1,x2,y1,y2,targetButton));
+        }
+
+
     }
 
 

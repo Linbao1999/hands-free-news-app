@@ -262,7 +262,7 @@ public class GazeControlledActivity extends AppCompatActivity {
             }
 
             for (int i = 0; i < temp.length; i++){
-                Log.i("Gaze Count", String.format("%dth Card: %d",i,temp[i]));
+                //Log.i("Gaze Count", String.format("%dth Card: %d",i,temp[i]));
                 final int index = i;
                 if (temp[i] > GAZE_HISTORY_LENGTH * 0.90) {
                     handler.post(new Runnable() {

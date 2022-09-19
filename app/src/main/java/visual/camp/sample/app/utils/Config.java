@@ -5,5 +5,5 @@ public class Config {
     // TODO: Set Country Code here
     public static final String COUNTRY_CODE = "us";
     public static final int GAZE_TRACKING_FPS = 30;
-    public static final int GAZE_HISTORY_LENGTH = 15;
+    public static final int GAZE_HISTORY_LENGTH = 20;
 }
