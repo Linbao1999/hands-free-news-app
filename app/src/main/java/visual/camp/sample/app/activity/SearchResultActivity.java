@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,7 +36,7 @@ public class SearchResultActivity extends GazeControlledActivity {
     SearchResultActivity context;
     List<News> newsList;
     String searchString;
-    Button backButton;
+    CardView backCardView;
     View view;
     List<CardView> newsCardViewList;
 
@@ -67,12 +69,18 @@ public class SearchResultActivity extends GazeControlledActivity {
         searchStringTextView.setText(searchString.toUpperCase(Locale.ROOT));
 
         // Set Up Back Button
-        backButton = binding.gazeButtonBack;
-        backButton.setOnClickListener(new View.OnClickListener() {
+        backCardView = binding.backCardView;
+        backCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), CategoryNavigationActivity.class);
                 startActivity(intent);
+
+                backCardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    }
+                });
             }
         });
 
@@ -106,6 +114,8 @@ public class SearchResultActivity extends GazeControlledActivity {
                 targetCardViews.add(binding.cardView2);
                 targetCardViews.add(binding.cardView3);
 
+                targetCardViews.add(binding.backCardView);
+
                 // add buttons that require gaze-control function to gazeCardViews
                 for(int i=0; i<targetCardViews.size(); i++){
                     int [] coordinates = new int[2];
@@ -116,8 +126,13 @@ public class SearchResultActivity extends GazeControlledActivity {
                     int x2 = x1 + targetCardView.getWidth();
                     int y2 = y1 + targetCardView.getHeight();
 
-                    Log.i("Target Card Bound",  String.format("%dth Card: ", i) + String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
+                    //Log.i("Target Card Bound",  String.format("%dth Card: ", i) + String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
                     gazeCardViews.add(new GazeCardView(x1,x2,y1,y2,targetCardView));
+
+                    // skip the backCardView
+                    if(i>=3){
+                        continue;
+                    }
 
                     final int index = i;
                     targetCardViews.get(i).setOnClickListener(new View.OnClickListener() {
@@ -132,20 +147,9 @@ public class SearchResultActivity extends GazeControlledActivity {
                 }
 
                 // THIS CAN"T BE DONE IN THE UI THREAD
-                URL urlToImage1, urlToImage2, urlToImage3;
-                try {
-                    urlToImage1 = new URL(newsList.get(0).getUrlToImage());
-                    urlToImage2 = new URL(newsList.get(1).getUrlToImage());
-                    urlToImage3 = new URL(newsList.get(2).getUrlToImage());
-
-                    binding.newsImage1.setImageBitmap(BitmapFactory.decodeStream(urlToImage1.openConnection().getInputStream()));
-                    binding.newsImage2.setImageBitmap(BitmapFactory.decodeStream(urlToImage2.openConnection().getInputStream()));
-                    binding.newsImage3.setImageBitmap(BitmapFactory.decodeStream(urlToImage3.openConnection().getInputStream()));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Picasso.get().load(newsList.get(0).getUrlToImage()).into(binding.newsImage1);
+                Picasso.get().load(newsList.get(1).getUrlToImage()).into(binding.newsImage2);
+                Picasso.get().load(newsList.get(2).getUrlToImage()).into(binding.newsImage3);
 
                 handler.post(new Runnable() {
                     @Override

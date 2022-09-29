@@ -1,10 +1,13 @@
 package visual.camp.sample.app.activity;
 
 import static visual.camp.sample.app.utils.Config.GAZE_HISTORY_LENGTH;
+import static visual.camp.sample.app.utils.Config.HIGHLIGHT_ELEVATION;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.ColorStateList;
+import android.graphics.ColorSpace;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -24,6 +27,9 @@ import androidx.cardview.widget.CardView;
 
 import camp.visual.gazetracker.GazeTracker;
 import camp.visual.gazetracker.callback.GazeCallback;
+import camp.visual.gazetracker.callback.StatusCallback;
+import camp.visual.gazetracker.callback.UserStatusCallback;
+import camp.visual.gazetracker.constant.StatusErrorType;
 import camp.visual.gazetracker.filter.OneEuroFilterManager;
 import camp.visual.gazetracker.gaze.GazeInfo;
 import camp.visual.gazetracker.state.EyeMovementState;
@@ -46,10 +52,10 @@ import visual.camp.sample.view.GazePathView;
 
 
 public class GazeControlledActivity extends AppCompatActivity {
-    private static final String TAG = DemoActivity.class.getSimpleName();
+    private static final String TAG = GazeControlledActivity.class.getSimpleName();
     private final ViewLayoutChecker viewLayoutChecker = new ViewLayoutChecker();
     private GazePathView gazePathView;
-    private GazeTrackerManager gazeTrackerManager;
+    public GazeTrackerManager gazeTrackerManager;
     private final OneEuroFilterManager oneEuroFilterManager = new OneEuroFilterManager(
             2, 30, 0.5F, 0.001F, 1.0F);
 
@@ -58,6 +64,7 @@ public class GazeControlledActivity extends AppCompatActivity {
     public ArrayDeque gazeHistory = new ArrayDeque<Integer>();
     public List<GazeButton> gazeButtons = new ArrayList<>();
     public List<GazeCardView> gazeCardViews = new ArrayList<>();
+
 
     Handler handler;
 
@@ -144,51 +151,32 @@ public class GazeControlledActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        gazeHistory = new ArrayDeque<Integer>();
         gazeTrackerManager.startGazeTracking();
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
         gazeHistory = new ArrayDeque<Integer>();
         gazeTrackerManager.stopGazeTracking();
+        super.onPause();
 
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
         gazeHistory = new ArrayDeque<Integer>();
         gazeTrackerManager.removeCallbacks(gazeCallback);
+        super.onStop();
     }
 
     @Override
     protected void onDestroy() {
+        gazeHistory = new ArrayDeque<Integer>();
+        gazeTrackerManager.removeCallbacks(gazeCallback);
         super.onDestroy();
     }
 
-    // Done in the child activity
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus){
-//        super.onWindowFocusChanged(hasFocus);
-//
-//        // Record Gaze Button Position
-//        targetButtons.add(binding.gazeButtonDown);
-//        targetButtons.add(binding.gazeButtonUp);
-//        // add buttons that require gaze-control function to this.gazeButtons
-//        for(int i=0; i<targetButtons.size(); i++){
-//            int [] coordinates = new int[2];
-//            Button targetButton = targetButtons.get(i);
-//            targetButton.getLocationOnScreen(coordinates);
-//            int x1 = coordinates[0];
-//            int y1 = coordinates[1];
-//            int x2 = x1 + targetButton.getWidth();
-//            int y2 = y1 + targetButton.getHeight();
-//
-//            Log.i(TAG, String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
-//            gazeButtons.add(new NewsContentActivity.GazeButton(x1,x2,y1,y2,targetButton));
-//        }
-//    }
 
     private final GazeCallback gazeCallback = new GazeCallback() {
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -196,34 +184,61 @@ public class GazeControlledActivity extends AppCompatActivity {
         public void onGaze(GazeInfo gazeInfo) {
             //Log.i(TAG, String.format("x: %d, y: %d", Math.round(gazeInfo.x), Math.round(gazeInfo.y)));
 
-            int newHistoryEntry = -1;
+            int triggeredButtonIndex = -1;
             // Check gaze buttons
             for (int i = 0; i < gazeButtons.size(); i++) {
                 int x = (int) Math.round(gazeInfo.x);
                 int y = (int) Math.round(gazeInfo.y);
                 final GazeButton btn = gazeButtons.get(i);
                 if (btn.isButtonContains(x, y)) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            btn.getButton().performClick();
-                        }
-                    });
-                    break;
+                    triggeredButtonIndex = i;
                 }
             }
 
-            // check gaze cards
-            if (newHistoryEntry == -1) {
-                for (int i = 0; i < gazeCardViews.size(); i++) {
-                    int x = (int) Math.round(gazeInfo.x);
-                    int y = (int) Math.round(gazeInfo.y);
-                    final GazeCardView gazeCardView = gazeCardViews.get(i);
-                    if (gazeCardView.isCardViewsContains(x, y)) {
-                        Log.i("DEBUG", i + "th card on gaze");
-                        newHistoryEntry = i;
-                        break;
+            if (triggeredButtonIndex != -1) {
+                final int index = triggeredButtonIndex;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int j = 0; j < gazeButtons.size(); j++) {
+                            // highlight selected button
+                            if (j == index) {
+                                gazeButtons.get(j).getButton().setElevation(HIGHLIGHT_ELEVATION);
+                                gazeButtons.get(j).getButton().performClick();
+                            }
+                            // unhighlight unselected button
+                            else {
+                                gazeButtons.get(j).getButton().setElevation(0);
+                            }
+                        }
+
                     }
+                });
+                return;
+            } else {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int j = 0; j < gazeButtons.size(); j++) {
+                            // unhighlight unselected button
+                            gazeButtons.get(j).getButton().setElevation(0);
+                        }
+
+                    }
+                });
+            }
+
+            int newHistoryEntry = -1;
+            // check gaze cards
+
+            for (int i = 0; i < gazeCardViews.size(); i++) {
+                int x = (int) Math.round(gazeInfo.x);
+                int y = (int) Math.round(gazeInfo.y);
+                final GazeCardView gazeCardView = gazeCardViews.get(i);
+                if (gazeCardView.isCardViewsContains(x, y)) {
+                    Log.i(TAG, i + "th card on gaze");
+                    newHistoryEntry = i;
+                    break;
                 }
             }
 
@@ -234,8 +249,39 @@ public class GazeControlledActivity extends AppCompatActivity {
 
                 }
                 gazeHistory.push(newHistoryEntry);
-            }
-            else{
+
+                if (newHistoryEntry != -1) {
+                    for (int i = 0; i < gazeCardViews.size(); i++) {
+                        final int index = i;
+
+                        if (newHistoryEntry == i) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    // highlight the selected card
+                                    //gazeCardViews.get(index).getCardView().setCardElevation(HIGHLIGHT_ELEVATION);
+                                    ColorStateList color = gazeCardViews.get(index).getCardView().getCardBackgroundColor();
+                                    gazeCardViews.get(index).getCardView().setCardBackgroundColor(color.withAlpha(200));
+
+
+                                    Log.i("DEBUG",String.format("setCardElevation(HIGHLIGHT_ELEVATION) called for the %dth card",index));
+                                    // unhighlight rest of the cards
+                                    for (int j = 0; j < gazeCardViews.size(); j++) {
+                                        if (j != index) {
+                                            //gazeCardViews.get(j).getCardView().setCardElevation(0);
+                                            ColorStateList crtColor = gazeCardViews.get(j).getCardView().getCardBackgroundColor();
+                                            gazeCardViews.get(j).getCardView().setCardBackgroundColor(crtColor.withAlpha(255));
+                                        }
+                                    }
+                                }
+                            });
+
+                            break;
+                        }
+                    }
+                }
+            } else {
                 // if no card in the activity, skip the following checking
                 return;
             }
@@ -248,20 +294,20 @@ public class GazeControlledActivity extends AppCompatActivity {
             // TEST
             Object[] gazeHistoryTempArray = gazeHistory.toArray();
             String testString = "";
-            for(int i=0;i<gazeHistoryTempArray.length;i++){
-                testString += String.format("%d, ", (Integer)gazeHistoryTempArray[i]);
+            for (int i = 0; i < gazeHistoryTempArray.length; i++) {
+                testString += String.format("%d, ", (Integer) gazeHistoryTempArray[i]);
             }
             Log.i("DEBUG", "gaze history: " + testString);
 
 
             for (int i = 0; i < gazeHistoryArrayList.length; i++) {
                 int currentHistoryVal = (Integer) gazeHistoryArrayList[i];
-                if(currentHistoryVal!=-1) {
+                if (currentHistoryVal != -1) {
                     temp[currentHistoryVal] += 1;
                 }
             }
 
-            for (int i = 0; i < temp.length; i++){
+            for (int i = 0; i < temp.length; i++) {
                 //Log.i("Gaze Count", String.format("%dth Card: %d",i,temp[i]));
                 final int index = i;
                 if (temp[i] > GAZE_HISTORY_LENGTH * 0.90) {
@@ -271,11 +317,11 @@ public class GazeControlledActivity extends AppCompatActivity {
                             gazeCardViews.get(index).getCardView().performClick();
                         }
                     });
-
-                    // TODO: Add break in production
-                    //break;
+                    break;
                 }
             }
+
+
         }
     };
 

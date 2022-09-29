@@ -4,15 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#D6F9DD"
     tools:context=".activity.CategoryNavigationActivity">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="135dp"
+        android:layout_marginBottom="150dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.43"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,7 +23,8 @@
             android:id="@+id/entertainmentCardView"
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            app:cardBackgroundColor="#8C5F66">
+            app:cardBackgroundColor="#8C5F66"
+            app:cardMaxElevation="100dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -45,7 +49,8 @@
             android:id="@+id/businessCardView"
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            app:cardBackgroundColor="#CB769E">
+            app:cardBackgroundColor="#CB769E"
+            app:cardMaxElevation="100dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -70,7 +75,8 @@
             android:id="@+id/technologyCardView"
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            app:cardBackgroundColor="#E09891">
+            app:cardBackgroundColor="#E09891"
+            app:cardMaxElevation="100dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -95,7 +101,8 @@
             android:id="@+id/sportsCardView"
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            app:cardBackgroundColor="#E8B9AB">
+            app:cardBackgroundColor="#E8B9AB"
+            app:cardMaxElevation="100dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -120,7 +127,8 @@
             android:id="@+id/scienceCardView"
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            app:cardBackgroundColor="#ADBCA5">
+            app:cardBackgroundColor="#ADBCA5"
+            app:cardMaxElevation="100dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -144,9 +152,9 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/audioSearchCardView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="25dp"
-            app:cardBackgroundColor="#F4B860">
+            android:layout_height="75dp"
+            app:cardBackgroundColor="#F4B860"
+            app:cardMaxElevation="100dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

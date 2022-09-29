@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat swUseGazeFilter;
     private SwitchCompat swStatusBlink, swStatusAttention, swStatusDrowsiness;
     private boolean isUseGazeFilter = true;
-    private boolean isStatusBlink = false;
+    private boolean isStatusBlink = true;
     private boolean isStatusAttention = false;
     private boolean isStatusDrowsiness = false;
     private int activeStatusCount = 0;
@@ -453,7 +453,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else if (group == rgAccuracy) {
                 if (checkedId == R.id.rb_accuracy_default) {
-                    criteria = AccuracyCriteria.DEFAULT;
+                    criteria = AccuracyCriteria.HIGH;
+                    //criteria = AccuracyCriteria.DEFAULT;
                 } else if (checkedId == R.id.rb_accuracy_low) {
                     criteria = AccuracyCriteria.LOW;
                 } else if (checkedId == R.id.rb_accuracy_high) {
@@ -762,7 +763,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBlink(long timestamp, boolean isBlinkLeft, boolean isBlinkRight, boolean isBlink, float eyeOpenness) {
-          Log.i(TAG, "check User Status Blink " +  "Left: " + isBlinkLeft + ", Right: " + isBlinkRight + ", Blink: " + isBlink + ", eyeOpenness: " + eyeOpenness);
+          //Log.i(TAG, "check User Status Blink " +  "Left: " + isBlinkLeft + ", Right: " + isBlinkRight + ", Blink: " + isBlink + ", eyeOpenness: " + eyeOpenness);
           viewEyeBlink.setLeftEyeBlink(isBlinkLeft);
           viewEyeBlink.setRightEyeBlink(isBlinkRight);
           viewEyeBlink.setEyeBlink(isBlink);

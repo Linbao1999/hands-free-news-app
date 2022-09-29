@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
+import camp.visual.gazetracker.callback.UserStatusCallback;
 import visual.camp.sample.app.R;
 import visual.camp.sample.app.databinding.ActivityNewsCollecrtionByCategoryBinding;
 import visual.camp.sample.app.model.News;
@@ -42,11 +43,12 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
     NewsCollectionByCategoryActivity context;
     List<News> newsList;
     String categoryName;
-    Button backButton;
+    CardView backCardView;
     View view;
 
     List<CardView> newsCardViewList;
 
+    boolean userStatusBlinkTriggered = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,17 +79,23 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
         categoryNameTextView.setText(categoryName.toUpperCase(Locale.ROOT));
 
         // Set Up Back Button
-        backButton = binding.gazeButtonBack;
-        backButton.setOnClickListener(new View.OnClickListener() {
+        backCardView = binding.backCardView;
+        backCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), CategoryNavigationActivity.class);
                 startActivity(intent);
+
+                // remove backButton listener
+                backCardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    }
+                });
             }
         });
 
         newsList = new ArrayList<>();
-
 
         viewModel = ViewModelProviders.of(context).get(NewsByCategoryViewModel.class);
         viewModel.getNewsLiveData().observe(context, newsListUpdateObserver);
@@ -101,6 +109,7 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
         //viewModel.setCountryCode(pref.getString(Util.COUNTRY_PREF, "tr"));
 
     }
+
 
     Observer<List<News>> newsListUpdateObserver = new Observer<List<News>>() {
         @Override
@@ -119,6 +128,8 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
                 targetCardViews.add(binding.cardView2);
                 targetCardViews.add(binding.cardView3);
 
+                targetCardViews.add(binding.backCardView);
+
                 // add buttons that require gaze-control function to gazeCardViews
                 for(int i=0; i<targetCardViews.size(); i++){
                     int [] coordinates = new int[2];
@@ -131,6 +142,11 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
 
                     Log.i("Target Card Bound",  String.format("%dth Card: ", i) + String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
                     gazeCardViews.add(new GazeCardView(x1,x2,y1,y2,targetCardView));
+
+                    // skip the backCardView
+                    if(i>=3){
+                        continue;
+                    }
 
                     final int index = i;
                     targetCardViews.get(i).setOnClickListener(new View.OnClickListener() {
@@ -171,7 +187,7 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
     @Override
     public void onWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
-
+        gazeCardViews = new ArrayList<>();
         // add card views that require gaze-control function to this.gazeButtons
         for(int i=0; i<targetCardViews.size(); i++){
             int [] coordinates = new int[2];
@@ -185,26 +201,6 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
             Log.i("Target Card Bound",  String.format("%dth Card: ", i) + String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
             gazeCardViews.add(new GazeCardView(x1,x2,y1,y2,targetCardView));
         }
-
-        super.onWindowFocusChanged(hasFocus);
-
-        // 2. Add Gaze Controlled Card / Buttons
-        targetButtons.add(binding.gazeButtonBack);
-        // add buttons that require gaze-control function to this.gazeButtons
-        for(int i=0; i<targetButtons.size(); i++){
-            int [] coordinates = new int[2];
-            Button targetButton = targetButtons.get(i);
-            targetButton.getLocationOnScreen(coordinates);
-            int x1 = coordinates[0];
-            int y1 = coordinates[1];
-            int x2 = x1 + targetButton.getWidth();
-            int y2 = y1 + targetButton.getHeight();
-
-            Log.i("GAZE_DEBUG", String.format("x1: %d, y1: %d, x2: %d, y2: %d",x1,y1,x2,y2));
-            gazeButtons.add(new GazeButton(x1,x2,y1,y2,targetButton));
-        }
-
-
     }
 
 

@@ -121,8 +121,6 @@ public class CategoryNavigationActivity extends GazeControlledActivity {
                 });
             }
         }
-
-
     }
 
 
@@ -131,11 +129,13 @@ public class CategoryNavigationActivity extends GazeControlledActivity {
         super.onWindowFocusChanged(hasFocus);
 
         // 2. Add Gaze Controlled Card / Buttons
+        targetCardViews = new ArrayList<>();
         targetCardViews.add(entertainmentCardView);
         targetCardViews.add(businessCardView);
         targetCardViews.add(technologyCardView);
         targetCardViews.add(sportsCardView);
         targetCardViews.add(scienceCardView);
+        targetCardViews.add(audioSearchCardView);
 
         // add buttons that require gaze-control function to this.gazeButtons
         for (int i = 0; i < targetCardViews.size(); i++) {
@@ -151,6 +151,4 @@ public class CategoryNavigationActivity extends GazeControlledActivity {
             gazeCardViews.add(new GazeCardView(x1, x2, y1, y2, targetCardView));
         }
     }
-
-
 }

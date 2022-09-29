@@ -14,20 +14,26 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".activity.SearchResultActivity"
+            android:noHistory="false"
             android:exported="false" />
         <activity
             android:name=".activity.CategoryNavigationActivity"
+            android:noHistory="false"
             android:exported="false">
 
         </activity>
 
         <activity
             android:name=".activity.NewsContentActivity"
+            android:noHistory="false"
             android:exported="false" />
         <activity
             android:name=".activity.NewsCollectionByCategoryActivity"
+            android:noHistory="false"
             android:exported="false" />
-        <activity android:name=".activity.MainActivity">
+        <activity
+            android:name=".activity.MainActivity"
+            android:noHistory="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
