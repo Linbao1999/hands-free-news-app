@@ -31,20 +31,26 @@ import camp.visual.gazetracker.callback.UserStatusCallback;
 import visual.camp.sample.app.R;
 import visual.camp.sample.app.databinding.ActivityNewsCollecrtionByCategoryBinding;
 import visual.camp.sample.app.model.News;
+import visual.camp.sample.app.utils.Config;
 import visual.camp.sample.app.viewmodel.NewsByCategoryViewModel;
 
 public class NewsCollectionByCategoryActivity extends GazeControlledActivity implements LifecycleOwner {
+    int pageSize = 3; // CONSTANT
     // View Binding
 
     // TODO: Put this in environment variable
-    static final String NEWS_API_KEY = "2ada588a66e745cfbce485182fd34bf7";
+    static final String NEWS_API_KEY = Config.NEWS_API_KEY;
     ActivityNewsCollecrtionByCategoryBinding binding;
     NewsByCategoryViewModel viewModel;
     NewsCollectionByCategoryActivity context;
     List<News> newsList;
     String categoryName;
     CardView backCardView;
+    CardView nextPageCardView;
+    CardView lastPageCardView;
     View view;
+    int page = 1;
+
 
     List<CardView> newsCardViewList;
 
@@ -67,7 +73,7 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
         setContentView(view);
         context = this;
 
-        // Bind Card Views
+        // Bind News Card Views, they have to be the first three CardViews in newsCardViewList
         newsCardViewList=new ArrayList<>();
         newsCardViewList.add(binding.cardView1);
         newsCardViewList.add(binding.cardView2);
@@ -95,21 +101,52 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
             }
         });
 
+        // Set up Last Page Button
+        lastPageCardView = binding.lastPageCardView;
+        nextPageCardView = binding.nextPageCardView;
+        lastPageCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (page>1){
+                    page-=1;
+                    Log.i("DEBUG", "Fetch news feed for last page.");
+                    getNewsFeed();
+                }
+            }
+        });
+        nextPageCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    page+=1;
+                    Log.i("DEBUG", "Fetch news feed for next page.");
+                    getNewsFeed();
+                } catch(Exception e){
+                    Log.i("DEBUG", "Last page reached.");
+                    page-=1;
+                }
+            }
+        });
+
+
         newsList = new ArrayList<>();
 
         viewModel = ViewModelProviders.of(context).get(NewsByCategoryViewModel.class);
         viewModel.getNewsLiveData().observe(context, newsListUpdateObserver);
         viewModel.setApiKey(NEWS_API_KEY);
-        try {
-            viewModel.getNews(categoryName);
-            Log.i("Debug","viewModel.getNews() successes");
-        } catch (Exception e) {
-            Log.i("Debug","viewModel.getNews() failed");
-        }
+        getNewsFeed();
         //viewModel.setCountryCode(pref.getString(Util.COUNTRY_PREF, "tr"));
 
     }
 
+    void getNewsFeed(){
+        try {
+            viewModel.getNews(categoryName, pageSize, page);
+            Log.i("Debug","viewModel.getNews() successes");
+        } catch (Exception e) {
+            Log.i("Debug","viewModel.getNews() failed");
+        }
+    }
 
     Observer<List<News>> newsListUpdateObserver = new Observer<List<News>>() {
         @Override
@@ -128,7 +165,10 @@ public class NewsCollectionByCategoryActivity extends GazeControlledActivity imp
                 targetCardViews.add(binding.cardView2);
                 targetCardViews.add(binding.cardView3);
 
+                // Add back navigation CardViews
                 targetCardViews.add(binding.backCardView);
+                targetCardViews.add(binding.lastPageCardView);
+                targetCardViews.add(binding.nextPageCardView);
 
                 // add buttons that require gaze-control function to gazeCardViews
                 for(int i=0; i<targetCardViews.size(); i++){

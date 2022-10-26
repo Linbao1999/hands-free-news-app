@@ -311,6 +311,7 @@ public class GazeControlledActivity extends AppCompatActivity {
                 //Log.i("Gaze Count", String.format("%dth Card: %d",i,temp[i]));
                 final int index = i;
                 if (temp[i] > GAZE_HISTORY_LENGTH * 0.90) {
+                    gazeHistory = new ArrayDeque();
                     handler.post(new Runnable() {
                         @Override
                         public void run() {

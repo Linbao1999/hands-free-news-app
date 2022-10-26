@@ -26,11 +26,12 @@ import java.util.Locale;
 import visual.camp.sample.app.databinding.ActivityNewsCollecrtionByCategoryBinding;
 import visual.camp.sample.app.databinding.ActivitySearchResultBinding;
 import visual.camp.sample.app.model.News;
+import visual.camp.sample.app.utils.Config;
 import visual.camp.sample.app.viewmodel.NewsByCategoryViewModel;
 
 public class SearchResultActivity extends GazeControlledActivity {
 
-    static final String NEWS_API_KEY = "2ada588a66e745cfbce485182fd34bf7";
+    static final String NEWS_API_KEY = Config.NEWS_API_KEY;
     ActivitySearchResultBinding binding;
     NewsByCategoryViewModel viewModel;
     SearchResultActivity context;
@@ -91,7 +92,7 @@ public class SearchResultActivity extends GazeControlledActivity {
         viewModel.getNewsLiveData().observe(context, newsListUpdateObserver);
         viewModel.setApiKey(NEWS_API_KEY);
         try {
-            viewModel.getSearchedNews(searchString);
+            viewModel.getSearchedNews(searchString,3, 1);
             Log.i("Debug","viewModel.getSearchedNews() successes");
         } catch (Exception e) {
             Log.i("Debug", "viewModel.getSearchedNews() failed");
@@ -170,7 +171,7 @@ public class SearchResultActivity extends GazeControlledActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
-
+        gazeCardViews = new ArrayList<>();
         // add buttons that require gaze-control function to this.gazeButtons
         for(int i=0; i<targetCardViews.size(); i++){
             int [] coordinates = new int[2];

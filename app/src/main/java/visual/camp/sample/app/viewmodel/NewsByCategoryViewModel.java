@@ -47,14 +47,14 @@ public class NewsByCategoryViewModel extends ViewModel{
         return restInterface[0];
     }
 
-    public void getNews(String category) throws Exception {
+    public void getNews(String category, int pageSize, int page) throws Exception {
 
         RestInterface restInterface = getRestInterface();
         Call<NewsCollectionByCategory> call;
         newsList.clear();
         newsLiveData.setValue(null);
         if (!category.equals("")) {
-            call = restInterface.getNewsByCategory(Config.COUNTRY_CODE, category, apiKey);
+            call = restInterface.getNewsByCategory(Config.COUNTRY_CODE, category, apiKey, pageSize, page);
         } else {
             throw new Exception("News category not specified.");
         }
@@ -65,9 +65,12 @@ public class NewsByCategoryViewModel extends ViewModel{
                 if (response.body() != null) {
                     Log.i("Debug", "totalNews Response Body Size: " + response.body().getTotalResults());
                     NewsCollectionByCategory totalNews = response.body();
-                    fillNewsList(totalNews);
+                    Log.i("DEBUG",String.format("totalNews.getNewsList().size(): %d", totalNews.getNewsList().size()));
 
                     Log.i("Debug", String.format("totalNews.getTotalResults: ",totalNews.getTotalResults()));
+                    if(totalNews.getNewsList().size()>0){
+                        fillNewsList(totalNews);
+                    }
                 }
                 else{
                     Log.i("Debug", "getNews() failed because response body is null ");
@@ -85,12 +88,12 @@ public class NewsByCategoryViewModel extends ViewModel{
     }
 
 
-    public void getSearchedNews(String keyword) {
+    public void getSearchedNews(String keyword, int pageSize, int page) {
         RestInterface restInterface = getRestInterface();
         Call<NewsCollectionByCategory> call;
         newsList.clear();
         newsLiveData.setValue(null);
-        call = restInterface.getSearchedTotalNews(keyword, apiKey);
+        call = restInterface.getSearchedTotalNews(keyword, apiKey, pageSize, page);
 
         call.enqueue(new Callback<NewsCollectionByCategory>() {
             @Override
